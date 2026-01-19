@@ -36,5 +36,5 @@ jobs:
       - name: Build and Push Image
         run: |
           TAG=${{ github.run_number }}
-          docker build -t ${{ vars.ACR_LOGIN_SERVER }}/nodeapp:${TAG} .
+          docker build -t ${{ vars.ACR_LOGIN_SERVER }}/nodeapp:${TAG} docker
           docker push ${{ vars.ACR_LOGIN_SERVER }}/nodeapp:${TAG}
