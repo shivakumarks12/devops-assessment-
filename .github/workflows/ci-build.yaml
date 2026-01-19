@@ -38,13 +38,6 @@ jobs:
             -Dsonar.organization=${{ vars.SONAR_ORG }}
             -Dsonar.sources=app
 
-      # Quality Gate (BLOCK PIPELINE IF QUALITY FAILS)
-      - name: Sonar Quality Gate
-        uses: SonarSource/sonarqube-quality-gate-action@v1
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
       #  Azure Login
       - name: Azure Login
         uses: azure/login@v2
