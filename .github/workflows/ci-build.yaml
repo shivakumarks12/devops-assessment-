@@ -15,26 +15,56 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 🔹 Azure Login
+      # Set up Node.js (needed for Sonar + npm)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # Install dependencies
+      - name: Install dependencies
+        working-directory: app
+        run: |
+          npm install
+
+      #  SonarCloud Scan
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=${{ vars.SONAR_ORG }}
+            -Dsonar.sources=app
+
+      # Quality Gate (BLOCK PIPELINE IF QUALITY FAILS)
+      - name: Sonar Quality Gate
+        uses: SonarSource/sonarqube-quality-gate-action@v1
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      #  Azure Login
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # 🔹 Debug (VERY IMPORTANT FIRST RUN)
+      #  Debug Variables
       - name: Debug Variables
         run: |
           echo "ACR_NAME=${{ vars.ACR_NAME }}"
           echo "ACR_LOGIN_SERVER=${{ vars.ACR_LOGIN_SERVER }}"
 
-      # 🔹 Login to ACR (FIXED)
+      #  Login to ACR
       - name: Login to ACR
         run: |
           az acr login --name ${{ vars.ACR_NAME }}
 
-      # 🔹 Build & Push Image
+      #  Build & Push Image (ONLY RUNS IF SONAR PASSES)
       - name: Build and Push Image
         run: |
           TAG=${{ github.run_number }}
-           docker build -f docker/Dockerfile -t ${{ vars.ACR_LOGIN_SERVER }}/nodeapp:${TAG} .
+          docker build -f docker/Dockerfile -t ${{ vars.ACR_LOGIN_SERVER }}/nodeapp:${TAG} .
           docker push ${{ vars.ACR_LOGIN_SERVER }}/nodeapp:${TAG}
