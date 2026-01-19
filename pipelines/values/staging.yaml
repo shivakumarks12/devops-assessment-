@@ -18,3 +18,10 @@ resources:
   limits:
     cpu: "700m"
     memory: "768Mi"
+
+service:
+  type: LoadBalancer
+  port: 3000
+
+serviceAccount:
+  name: nodeapp-sa

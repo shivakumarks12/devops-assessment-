@@ -1,18 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-nodeapp
+  name: {{ include "nodeapp.fullname" . }}
+  labels:
+    app: {{ include "nodeapp.name" . }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: nodeapp
+      app: {{ include "nodeapp.name" . }}
   template:
     metadata:
       labels:
-        app: nodeapp
+        app: {{ include "nodeapp.name" . }}
     spec:
-      serviceAccountName: nodeapp-sa
+      serviceAccountName: {{ include "nodeapp.serviceAccountName" . }}
       containers:
         - name: nodeapp
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
