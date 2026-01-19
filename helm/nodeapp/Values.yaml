@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: myacr.azurecr.io/nodeapp   # change to your real ACR
+  repository: acrdevopsdemoks.azurecr.io/nodeapp
   tag: latest
   pullPolicy: IfNotPresent
 

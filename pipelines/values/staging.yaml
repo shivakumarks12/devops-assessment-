@@ -1,7 +1,10 @@
 replicaCount: 3
 
 image:
-  tag: staging
+  repository: acrdevopsdemoks.azurecr.io/nodeapp
+  tag: latest
+  pullPolicy: IfNotPresent
+
 
 autoscaling:
   enabled: true

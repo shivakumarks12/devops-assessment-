@@ -1,7 +1,10 @@
 replicaCount: 2
 
 image:
-  tag: qa
+  repository: acrdevopsdemoks.azurecr.io/nodeapp
+  tag: latest
+  pullPolicy: IfNotPresent
+
 
 autoscaling:
   enabled: true
