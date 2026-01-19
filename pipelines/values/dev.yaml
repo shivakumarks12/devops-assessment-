@@ -1,7 +1,10 @@
 replicaCount: 1
 
 image:
-  tag: dev
+  repository: acrdevopsdemoks.azurecr.io/nodeapp
+  tag: latest
+  pullPolicy: IfNotPresent
+
 
 autoscaling:
   enabled: true
@@ -18,3 +21,10 @@ resources:
   limits:
     cpu: "300m"
     memory: "256Mi"
+
+service:
+  type: LoadBalancer
+  port: 3000
+
+serviceAccount:
+  name: nodeapp-sa
