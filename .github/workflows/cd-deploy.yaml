@@ -1,0 +1,45 @@
+name: CD - Deploy NodeApp to AKS
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Deploy Environment
+        required: true
+        type: choice
+        options:
+          - dev
+          - qa
+          - staging
+          - prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set AKS context
+        uses: azure/aks-set-context@v4
+        with:
+          resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
+          cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Helm Deploy
+        run: |
+          helm upgrade --install nodeapp helm/nodeapp \
+            --namespace nodeapp-${{ inputs.environment }} \
+            --create-namespace \
+            -f pipelines/values/${{ inputs.environment }}.yaml \
+            --set image.tag=${{ github.run_number }}
